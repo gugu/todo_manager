@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+<head>
+    <title>Todo manager</title>
+    <script src="{% static "js/components/requirejs/require.js" %}" data-main="{% static "js/main.js" %}"></script>
+
+</head>
+<body>
+    {% csrf_token %}
+    <div id="container"></div>
+</body>
+</html>

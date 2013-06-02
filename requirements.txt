@@ -1,0 +1,4 @@
+django==1.5.1
+# this is for python3 support
+-e git://github.com/dbtsai/python-mimeparse.git#egg=mimeparse
+-e git://github.com/gugu/django-tastypie.git#egg=django-tastypie
