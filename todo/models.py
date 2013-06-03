@@ -7,6 +7,7 @@ class Todo(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     name = models.CharField(max_length=4096)
     priority = models.PositiveIntegerField()
+    is_done = models.BooleanField(blank=True, default=False)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         max_priority = self.__class__.objects.filter(user=self.user).aggregate(Max('priority'))['priority__max']

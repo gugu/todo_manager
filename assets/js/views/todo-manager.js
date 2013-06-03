@@ -13,7 +13,8 @@ define([
             'submit form.edit-task': 'editTask',
             'click .delete-task': 'deleteTask',
             'click a.edit-task': 'showEditForm',
-            'click .logout': 'logoutUser'
+            'click .logout': 'logoutUser',
+            'change .change-status': 'changeStatus'
         },
 
         initialize: function () {
@@ -92,6 +93,15 @@ define([
                     alert('Error!!!');
                 }
             })
+        },
+
+        changeStatus: function (event) {
+            event.preventDefault();
+            var input = event.currentTarget;
+            var taskId = $(input).attr('data-task-id');
+            var task = this.todoTasks.get(taskId);
+            task.save('is_done', !!$(input).val(), {patch: true});
+
         },
 
         deleteTask: function (event) {
