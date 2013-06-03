@@ -1,27 +1,28 @@
 define([
     "backbone",
-    "models/user",
+    "models/session",
     "globals",
     "text!templates/login.jst"
-], function (Backbone, User, globals, login_template) {
+], function (Backbone, Session, globals, login_template) {
     return Backbone.View.extend({
-        el: $('#container'),
         events: {
             'submit .login-form': 'processAuthentication'
         },
         render: function () {
-            this.$el.html(login_template, {})
+            this.$el.html(login_template, {});
+            return this;
         },
         processAuthentication: function (event) {
             event.preventDefault();
-            var user = new User();
+            var session = new Session();
             var form = event.target;
-            user.set('username', form.elements.username.value);
-            user.set('password', form.elements.password.value);
-            user.save(null, {
+            session.login({
+                'username': form.elements.username.value,
+                'password': form.elements.password.value
+            }, {
                 error: _.bind(this.showAuthenticationError, this),
                 success: function () {
-                    globals.user = user;
+                    globals.session = session;
                     globals.router.navigate('', true);
                 }
             });

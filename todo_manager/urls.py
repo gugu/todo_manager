@@ -4,7 +4,7 @@ from django.conf.urls import patterns, include, url
 # Uncomment the next two lines to enable the admin:
 from tastypie.api import Api
 from django.contrib import admin
-from todo.api import TodoResource, AuthResource
+from todo.api import TodoResource, AuthResource, UserResource
 from todo.views import IndexPageView
 
 
@@ -12,9 +12,11 @@ admin.autodiscover()
 
 todo_resource = TodoResource()
 auth_resource = AuthResource()
+user_resource = UserResource()
 v1_api = Api(api_name='v1')
 v1_api.register(todo_resource)
 v1_api.register(auth_resource)
+v1_api.register(user_resource)
 
 urlpatterns = patterns('',
                        # Examples:

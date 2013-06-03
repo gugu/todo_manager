@@ -4,10 +4,10 @@ define([
     'backbone',
     'globals',
     'router',
-    'models/user'
-], function ($, _, Backbone, globals, Router, User) {
+    'models/session'
+], function ($, _, Backbone, globals, Router, Session) {
     var initialize = function () {
-        globals.user = new User;
+        globals.session = new Session;
         Router.initialize();
     };
 

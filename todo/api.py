@@ -1,11 +1,12 @@
 from django.contrib.auth import get_user_model, login, authenticate, logout
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.db import IntegrityError
 
 from tastypie import fields
-from tastypie.exceptions import ImmediateHttpResponse
+from tastypie.exceptions import ImmediateHttpResponse, BadRequest
 from tastypie.validation import FormValidation
 from tastypie.resources import ModelResource, Resource
-from tastypie.authentication import MultiAuthentication, SessionAuthentication, ApiKeyAuthentication
+from tastypie.authentication import MultiAuthentication, SessionAuthentication, ApiKeyAuthentication, Authentication
 from tastypie.authorization import Authorization
 from todo.models import Todo
 
@@ -26,7 +27,6 @@ class AuthResource(Resource):
     def obj_delete_list(self, bundle, **kwargs):
         logout(bundle.request)
 
-
     def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
         return '/'
 
@@ -34,6 +34,27 @@ class AuthResource(Resource):
         always_return_data = True
         object_class = get_user_model()
         validation = FormValidation(form_class=AuthenticationForm)
+
+
+class UserResource(ModelResource):
+    def obj_create(self, bundle, **kwargs):
+        try:
+            bundle = super(UserResource, self).obj_create(bundle, **kwargs)
+            bundle.obj.set_password(bundle.data.get('password1'))
+            bundle.obj.save()
+        except IntegrityError:
+            raise BadRequest('That username already exists')
+        return bundle
+
+    class Meta:
+        allowed_methods = ['post']
+        queryset = get_user_model().objects.all()
+        object_class = get_user_model()
+        always_return_data = True
+        authentication = Authentication()
+        authorization = Authorization()
+        validation = FormValidation(form_class=UserCreationForm)
+        fields = ['username']
 
 
 class TodoResource(ModelResource):

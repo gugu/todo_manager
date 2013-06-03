@@ -8,7 +8,6 @@ define([
     'text!templates/todo-task-edit.jst'
 ], function (_, Backbone, globals, TodoTaskList, todo_list_template, todo_task_template, todo_task_edit_template) {
     return Backbone.View.extend({
-        el: $('#container'),
         events: {
             'submit .add-task': 'addTask',
             'submit form.edit-task': 'editTask',
@@ -30,6 +29,7 @@ define([
             this.todoTasks.each(function (task) {
                 this.onTaskAdded(task);
             });
+            return this;
         },
 
         addTask: function (event) {
@@ -101,7 +101,7 @@ define([
             task.destroy();
         },
 
-        logoutUser: function () {
+        logoutUser: function (event) {
             event.preventDefault();
             globals.router.navigate('logout', true);
         }
