@@ -14,10 +14,14 @@ define(['jquery', 'underscore', 'backbone'], function ($, _, Backbone) {
                     continue;
                 }
                 currentIndex ++;
-                nextTask.save('priority', currentIndex, {patch: true});
+                if (nextTask.get('priority') !== currentIndex) {
+                    nextTask.save('priority', currentIndex, {patch: true});
+                }
             }
-            this.set('priority', prevIndex);
-            this.save();
+            if (this.get('priority') !== prevIndex) {
+                this.set('priority', prevIndex);
+                this.save();
+            }
             this.collection.sort();
         }
     });
