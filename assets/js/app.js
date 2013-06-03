@@ -2,9 +2,12 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'router'
-], function ($, _, Backbone, Router) {
+    'globals',
+    'router',
+    'models/user'
+], function ($, _, Backbone, globals, Router, User) {
     var initialize = function () {
+        globals.user = new User;
         Router.initialize();
     };
 

@@ -11,7 +11,7 @@ class Todo(models.Model):
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         max_priority = self.__class__.objects.filter(user=self.user).aggregate(Max('priority'))['priority__max']
         if self.priority is None:
-            self.priority = max_priority + 1
+            self.priority = max_priority + 1 if max_priority is not None else 0
         super().save(force_insert, force_update, using, update_fields)
 
     class Meta:

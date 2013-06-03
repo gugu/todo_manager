@@ -1,19 +1,22 @@
 define([
     'underscore',
     'backbone',
+    'globals',
     'collections/todo-task-list',
     'text!templates/todo-manager.jst',
     'text!templates/todo-task.jst',
     'text!templates/todo-task-edit.jst'
-], function (_, Backbone, TodoTaskList, todo_list_template, todo_task_template, todo_task_edit_template) {
+], function (_, Backbone, globals, TodoTaskList, todo_list_template, todo_task_template, todo_task_edit_template) {
     return Backbone.View.extend({
         el: $('#container'),
         events: {
             'submit .add-task': 'addTask',
             'submit form.edit-task': 'editTask',
             'click .delete-task': 'deleteTask',
-            'click a.edit-task': 'showEditForm'
+            'click a.edit-task': 'showEditForm',
+            'click .logout': 'logoutUser'
         },
+
         initialize: function () {
             this.todoTasks = new TodoTaskList();
             this.todoTasks.fetch();
@@ -35,7 +38,7 @@ define([
             var name_input = form.elements.name;
             this.todoTasks.create({
                 'name': name_input.value
-            });
+            }, {wait: true});
 
             name_input.value = '';
         },
@@ -43,28 +46,19 @@ define([
         updateSortable: function () {
             var me = this;
             this.$('.task-list').sortable("destroy");
-            this.$('.task-list').sortable().bind('sortupdate', function (e, ui) {
+            this.$('.task-list').sortable().bind('sortupdate', _.bind(this.onOrderChanged, this));
+        },
+
+        onOrderChanged: function (event, ui) {
                 var taskId = $(ui.item).attr('data-task-id');
                 var prevTaskId = $(ui.item).prev().attr('data-task-id');
-                var prevTask = me.todoTasks.get(prevTaskId);
-                var prevIndex = prevTaskId !== undefined ? _.indexOf(me.todoTasks.models, prevTask) + 1 : 0;
-                console.log(prevTask);
-                console.log(prevIndex);
-                var task = me.todoTasks.get(taskId);
-                var currentIndex = prevIndex;
-                for (var i = prevIndex; i < me.todoTasks.length; i++) {
-                    var nextTask = me.todoTasks.at(currentIndex);
-                    if (task.id === nextTask.id) {
-                        continue;
-                    }
-                    currentIndex ++;
-                    nextTask.save('priority', currentIndex, {patch: true});
-                }
-                task.set('priority', prevIndex);
-                task.save();
-                me.todoTasks.sort();
-            });
-        }, onTaskAdded: function (model) {
+                var prevTask = prevTaskId !== undefined ? this.todoTasks.get(prevTaskId) : undefined;
+                var task = this.todoTasks.get(taskId);
+                task.placeAfter(prevTask);
+
+        },
+
+        onTaskAdded: function (model) {
             this.$('.task-list').append(_.template(todo_task_template, {'task': model}));
             this.updateSortable();
         },
@@ -105,6 +99,11 @@ define([
             var taskId = $(event.target).attr('data-task-id');
             var task = this.todoTasks.get(taskId);
             task.destroy();
+        },
+
+        logoutUser: function () {
+            event.preventDefault();
+            globals.router.navigate('logout', true);
         }
     });
 });

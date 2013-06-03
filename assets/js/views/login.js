@@ -21,6 +21,7 @@ define([
             user.save(null, {
                 error: _.bind(this.showAuthenticationError, this),
                 success: function () {
+                    globals.user = user;
                     globals.router.navigate('', true);
                 }
             });

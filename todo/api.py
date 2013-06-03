@@ -1,4 +1,4 @@
-from django.contrib.auth import get_user_model, login, authenticate
+from django.contrib.auth import get_user_model, login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 
 from tastypie import fields
@@ -23,6 +23,10 @@ class AuthResource(Resource):
         login(bundle.request, user)
         return bundle
 
+    def obj_delete_list(self, bundle, **kwargs):
+        logout(bundle.request)
+
+
     def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
         return '/'
 
@@ -42,6 +46,7 @@ class TodoResource(ModelResource):
         return super().obj_create(bundle, **kwargs)
 
     class Meta:
+        always_return_data = True
         queryset = Todo.objects.all()
         authentication = MultiAuthentication(SessionAuthentication(), ApiKeyAuthentication())
         authorization = Authorization()

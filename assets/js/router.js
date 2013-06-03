@@ -24,6 +24,10 @@ define([
             var view = new LoginView;
             view.render()
         });
+        router.on('route:logout', function () {
+            globals.user.logout();
+            router.navigate('login', true)
+        });
         globals.router = router;
         Backbone.history.start();
     };
